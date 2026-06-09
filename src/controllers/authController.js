@@ -1,5 +1,7 @@
 const authService = require('../services/authService');
 
+const prisma = require('../database/prisma');
+
 async function register(req, res) {
   try {
     const user = await authService.registerUser(req.body);
@@ -35,7 +37,24 @@ async function login(req, res) {
   }
 }
 
+async function profile(req, res) {
+
+  const user = await prisma.user.findUnique({
+    where: {
+      id: req.user.id
+    }
+  });
+
+  return res.json({
+    id: user.id,
+    name: user.name,
+    email: user.email
+  });
+
+}
+
 module.exports = {
   register,
-  login
+  login,
+  profile
 };

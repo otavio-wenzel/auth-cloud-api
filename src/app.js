@@ -22,6 +22,15 @@ app.use(
   swaggerUi.setup(swaggerSpec)
 );
 
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Auth Cloud API',
+    status: 'online',
+    docs: '/api-docs',
+    health: '/health'
+  });
+});
+
 app.use('/auth', authRoutes);
 
 module.exports = app;

@@ -1,8 +1,10 @@
 const express = require('express');
+const swaggerUi = require('swagger-ui-express');
+
+const swaggerSpec = require('./config/swagger');
+const authRoutes = require('./routes/authRoutes');
 
 const app = express();
-
-const authRoutes = require('./routes/authRoutes');
 
 app.use(express.json());
 
@@ -13,6 +15,12 @@ app.get('/health', (req, res) => {
     version: '1.0.0'
   });
 });
+
+app.use(
+  '/api-docs',
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec)
+);
 
 app.use('/auth', authRoutes);
 

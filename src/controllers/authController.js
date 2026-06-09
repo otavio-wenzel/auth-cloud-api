@@ -53,8 +53,32 @@ async function profile(req, res) {
 
 }
 
+async function changePassword(req, res) {
+
+  try {
+
+    const result =
+      await authService.changePassword(
+        req.user.id,
+        req.body.currentPassword,
+        req.body.newPassword
+      );
+
+    return res.status(200).json(result);
+
+  } catch (error) {
+
+    return res.status(400).json({
+      error: error.message
+    });
+
+  }
+
+}
+
 module.exports = {
   register,
   login,
-  profile
+  profile,
+  changePassword
 };

@@ -62,7 +62,53 @@ async function loginUser({ email, password }) {
   };
 }
 
+async function changePassword(
+  userId,
+  currentPassword,
+  newPassword
+) {
+
+  const user = await prisma.user.findUnique({
+    where: {
+      id: userId
+    }
+  });
+
+  if (!user) {
+    throw new Error('Usuário não encontrado');
+  }
+
+  const passwordMatch = await bcrypt.compare(
+    currentPassword,
+    user.passwordHash
+  );
+
+  if (!passwordMatch) {
+    throw new Error('Senha atual incorreta');
+  }
+
+  const newPasswordHash = await bcrypt.hash(
+    newPassword,
+    10
+  );
+
+  await prisma.user.update({
+    where: {
+      id: userId
+    },
+    data: {
+      passwordHash: newPasswordHash
+    }
+  });
+
+  return {
+    message: 'Senha alterada com sucesso'
+  };
+
+}
+
 module.exports = {
   registerUser,
-  loginUser
+  loginUser,
+  changePassword
 };

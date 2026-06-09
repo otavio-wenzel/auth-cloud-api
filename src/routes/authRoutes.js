@@ -91,4 +91,10 @@ router.get(
   controller.profile
 );
 
+router.put(
+  '/change-password',
+  authMiddleware,
+  controller.changePassword
+);
+
 module.exports = router;

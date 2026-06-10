@@ -4,7 +4,14 @@ const prisma = require('../database/prisma');
 
 async function register(req, res) {
   try {
-    const user = await authService.registerUser(req.body);
+
+    const dto = {
+      name: req.body.name,
+      email: req.body.email,
+      password: req.body.password
+    };
+
+    const user = await authService.registerUser(dto);
 
     return res.status(201).json({
       id: user.id,
@@ -24,7 +31,12 @@ async function register(req, res) {
 async function login(req, res) {
   try {
 
-    const result = await authService.loginUser(req.body);
+    const dto = {
+      email: req.body.email,
+      password: req.body.password
+    };
+
+    const result = await authService.loginUser(dto);
 
     return res.status(200).json(result);
 
@@ -57,11 +69,16 @@ async function changePassword(req, res) {
 
   try {
 
+    const {
+      currentPassword,
+      newPassword
+    } = req.body;
+
     const result =
       await authService.changePassword(
         req.user.id,
-        req.body.currentPassword,
-        req.body.newPassword
+        currentPassword,
+        newPassword
       );
 
     return res.status(200).json(result);

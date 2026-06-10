@@ -1,6 +1,13 @@
 const express = require('express');
 const controller = require('../controllers/authController');
 const authMiddleware = require('../middlewares/authMiddleware');
+const validationMiddleware =
+  require('../middlewares/validationMiddleware');
+
+const {
+  registerValidation,
+  loginValidation
+} = require('../validators/authValidator');
 
 const router = express.Router();
 
@@ -35,9 +42,14 @@ const router = express.Router();
  *       201:
  *         description: Usuário criado com sucesso
  *       400:
- *         description: Usuário já existe
+ *         description: Dados inválidos ou usuário já existe
  */
-router.post('/register', controller.register);
+router.post(
+  '/register',
+  registerValidation,
+  validationMiddleware,
+  controller.register
+);
 
 /**
  * @swagger
@@ -65,10 +77,17 @@ router.post('/register', controller.register);
  *     responses:
  *       200:
  *         description: Login realizado com sucesso
+ *       400:
+ *         description: Dados inválidos
  *       401:
  *         description: Email ou senha inválidos
  */
-router.post('/login', controller.login);
+router.post(
+  '/login',
+  loginValidation,
+  validationMiddleware,
+  controller.login
+);
 
 /**
  * @swagger
@@ -91,6 +110,39 @@ router.get(
   controller.profile
 );
 
+/**
+ * @swagger
+ * /auth/change-password:
+ *   put:
+ *     summary: Altera a senha do usuário autenticado
+ *     tags:
+ *       - Authentication
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - currentPassword
+ *               - newPassword
+ *             properties:
+ *               currentPassword:
+ *                 type: string
+ *                 example: 123456
+ *               newPassword:
+ *                 type: string
+ *                 example: 654321
+ *     responses:
+ *       200:
+ *         description: Senha alterada com sucesso
+ *       400:
+ *         description: Senha atual incorreta
+ *       401:
+ *         description: Token inválido ou ausente
+ */
 router.put(
   '/change-password',
   authMiddleware,
